@@ -18,6 +18,13 @@ public class Chunk {
 		this.pos = pos;
 	}
 	
+	public void initGL() {
+	}
+	
+	public void init() {
+		
+	}
+	
 	public void update(){
 	}
 

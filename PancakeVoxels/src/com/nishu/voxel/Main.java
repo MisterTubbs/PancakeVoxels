@@ -1,14 +1,6 @@
 package com.nishu.voxel;
 
-import static org.lwjgl.opengl.GL11.GL_COLOR_BUFFER_BIT;
-import static org.lwjgl.opengl.GL11.GL_DEPTH_BUFFER_BIT;
-import static org.lwjgl.opengl.GL11.GL_MODELVIEW;
-import static org.lwjgl.opengl.GL11.GL_PROJECTION;
-import static org.lwjgl.opengl.GL11.glClear;
-import static org.lwjgl.opengl.GL11.glClearColor;
-import static org.lwjgl.opengl.GL11.glLoadIdentity;
-import static org.lwjgl.opengl.GL11.glMatrixMode;
-import static org.lwjgl.opengl.GL11.glViewport;
+import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.util.glu.GLU.gluPerspective;
 
 import org.lwjgl.opengl.Display;
@@ -48,6 +40,8 @@ public class Main extends Screen{
 		
 		gluPerspective(67.0f, WIDTH / HEIGHT, 0.001f, 1000f);
 		glMatrixMode(GL_MODELVIEW);
+		
+		glEnable(GL_DEPTH_TEST);
 	}
 	
 	private void initCamera(){
