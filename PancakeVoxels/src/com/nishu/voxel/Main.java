@@ -21,8 +21,7 @@ public class Main extends Screen{
 	public Main(){
 		gameLoop = new GameLoop();
 		gameLoop.setScreen(this);
-		gameLoop.setDebugMode(true);
-		gameLoop.start(60);
+		gameLoop.start(30);
 	}
 
 	@Override
