@@ -13,19 +13,23 @@ import com.nishu.utils.Color4f;
 import com.nishu.utils.Font;
 import com.nishu.utils.GameLoop;
 import com.nishu.utils.Screen;
+import com.nishu.utils.Shader;
+import com.nishu.utils.ShaderProgram;
 import com.nishu.utils.Text;
 import com.nishu.voxel.Main;
+import com.nishu.voxel.utilites.Spritesheet;
 import com.nishu.voxel.world.chunks.Chunk;
 
 public class World extends Screen {
 
 	private Camera camera;
 	private Font font;
-	
+
 	private Chunk c;
+	private ShaderProgram shader;
 
 	private boolean renderText = true;
-	
+
 	public World() {
 		initGL();
 		init();
@@ -35,22 +39,28 @@ public class World extends Screen {
 	public void init() {
 		camera = new Camera3D.CameraBuilder().setAspectRatio(Main.WIDTH / Main.HEIGHT).setRotation(0, 0, 0).setPosition(0, 0, 0).setFieldOfView(67).build();
 		font = new Font();
-		font.loadFont("Default", "wasco.png");
-		
-		c = new Chunk(0, 0, 0);
+		font.loadFont("Default", "fonts/wasco.png");
+
+		Shader temp = new Shader("/shaders/chunk.vert", "/shaders/chunk.frag");
+		shader = new ShaderProgram(temp.getvShader(), temp.getfShader());
+
+		c = new Chunk(shader, 0, 0, 0);
 	}
 
 	@Override
 	public void initGL() {
+		glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+		glEnable(GL_CULL_FACE);
 	}
 
 	@Override
 	public void update() {
+		c.update();
 		input();
 	}
 
 	private void input() {
-		camera.updateKeys(32, 1);
+		camera.updateKeys(32, 2);
 		camera.updateMouse(1, 90, -90);
 		if (Mouse.isButtonDown(0)) {
 			Mouse.setGrabbed(true);
@@ -72,11 +82,11 @@ public class World extends Screen {
 	@Override
 	public void render() {
 		render3D();
-		
+		Spritesheet.tiles.bind();
+
 		camera.applyTranslations();
 		c.render();
 		glLoadIdentity();
-		
 		if (renderText) {
 			render2D();
 			renderText();
@@ -90,6 +100,7 @@ public class World extends Screen {
 	}
 
 	public void render2D() {
+		glCullFace(GL_BACK);
 		glClearDepth(1);
 		glMatrixMode(GL_PROJECTION);
 		glLoadIdentity();
@@ -100,6 +111,7 @@ public class World extends Screen {
 	}
 
 	public void render3D() {
+		glCullFace(GL_FRONT);
 		glViewport(0, 0, Display.getWidth(), Display.getHeight());
 		glMatrixMode(GL_PROJECTION);
 		glLoadIdentity();

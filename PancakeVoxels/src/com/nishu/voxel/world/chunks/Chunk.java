@@ -1,12 +1,17 @@
 package com.nishu.voxel.world.chunks;
 
-import static org.lwjgl.opengl.GL15.*;
-import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL11.GL_COMPILE;
+import static org.lwjgl.opengl.GL11.GL_QUADS;
+import static org.lwjgl.opengl.GL11.glBegin;
+import static org.lwjgl.opengl.GL11.glCallList;
+import static org.lwjgl.opengl.GL11.glEnd;
+import static org.lwjgl.opengl.GL11.glEndList;
+import static org.lwjgl.opengl.GL11.glGenLists;
+import static org.lwjgl.opengl.GL11.glNewList;
 
-import java.nio.FloatBuffer;
+import java.util.Random;
 
-import org.lwjgl.BufferUtils;
-
+import com.nishu.utils.ShaderProgram;
 import com.nishu.utils.Vector3f;
 import com.nishu.voxel.geometry.Shape;
 import com.nishu.voxel.world.tiles.Tile;
@@ -14,95 +19,94 @@ import com.nishu.voxel.world.tiles.Tile;
 public class Chunk {
 
 	public static final int CHUNKSIZE = 16;
-	
-	private Vector3f pos;
-	private FloatBuffer vCoords, cCoords;
-	private byte[][][] tiles;
 
-	private int vID, cID, sizeX, sizeY, sizeZ;
+	private Vector3f pos;
+	private byte[][][] tiles;
+	private ShaderProgram shader;
+
+	private int vcID, sizeX, sizeY, sizeZ;
 	private boolean isActive;
-	
-	public Chunk(float x, float y, float z){
-		this(new Vector3f(x, y, z));
+
+	private Random rand;
+
+	public Chunk(ShaderProgram shader, float x, float y, float z) {
+		this(shader, new Vector3f(x, y, z));
 	}
-	
-	public Chunk(Vector3f pos){
+
+	public Chunk(ShaderProgram shader, Vector3f pos) {
 		this.pos = pos;
-		
+		this.shader = shader;
+
 		initGL();
 		init();
 	}
-	
+
 	public void initGL() {
+		rand = new Random();
+
 		sizeX = (int) pos.getX() + CHUNKSIZE;
-		sizeY = (int) (pos.getY() + CHUNKSIZE);
-		sizeZ = (int) (pos.getZ() + CHUNKSIZE);
+		sizeY = (int) pos.getY() + CHUNKSIZE;
+		sizeZ = (int) pos.getZ() + CHUNKSIZE;
+
+		vcID = glGenLists(1);
 
 		tiles = new byte[sizeX][sizeY][sizeZ];
-		
-		vCoords = BufferUtils.createFloatBuffer(CHUNKSIZE * CHUNKSIZE * CHUNKSIZE * (3 * 4 * 6));
-		cCoords = BufferUtils.createFloatBuffer(CHUNKSIZE * CHUNKSIZE * CHUNKSIZE * (4 * 6));
-		
+
 		createChunk();
-		
-		vCoords.flip();
-		cCoords.flip();
-		
-		vID = glGenBuffers();
-		glBindBuffer(GL_ARRAY_BUFFER, vID);
-		glBufferData(GL_ARRAY_BUFFER, vCoords, GL_STATIC_DRAW);
-		glBindBuffer(GL_ARRAY_BUFFER, 0);
-		
-		cID = glGenBuffers();
-		glBindBuffer(GL_ARRAY_BUFFER, cID);
-		glBufferData(GL_ARRAY_BUFFER, cCoords, GL_STATIC_DRAW);
-		glBindBuffer(GL_ARRAY_BUFFER, 0);
+		rebuild();
 	}
-	
+
 	public void init() {
 	}
-	
+
 	private void createChunk() {
-		for(int x = (int) pos.getX(); x < sizeX; x++) {
-			for(int y = (int) pos.getY(); y < sizeY; y++) {
-				for(int z = (int) pos.getZ(); z < sizeZ; z++) {
-					tiles[x][y][z] = Tile.Grass.getId();
-					vCoords.put(Shape.createCubeVertices(x, y, z, 1));
+		for (int x = (int) pos.getX(); x < sizeX; x++) {
+			for (int y = (int) pos.getY(); y < sizeY; y++) {
+				for (int z = (int) pos.getZ(); z < sizeZ; z++) {
+					tiles[x][y][z] = Tile.Air.getId();
+					if (rand.nextInt(10) == 0)
+						tiles[x][y][z] = Tile.Grass.getId();
 				}
 			}
 		}
 	}
-	
-	public void update(){
+
+	public void update() {
 	}
 
-	public void render(){
-		glBindBuffer(GL_ARRAY_BUFFER, vID);
-		glVertexPointer(3, GL_FLOAT, 0, 0);
-
-		glEnableClientState(GL_VERTEX_ARRAY);
-		
-		glDrawArrays(GL_QUADS, 0, CHUNKSIZE * CHUNKSIZE * CHUNKSIZE * (3 * 4 * 6));
-		
-		glDisableClientState(GL_VERTEX_ARRAY);
+	public void render() {
+		glCallList(vcID);
 	}
 
-	public void rebuild(){
-	}
-	
-	private void checkTileInView(){
+	public void rebuild() {
+		glNewList(vcID, GL_COMPILE);
+		glBegin(GL_QUADS);
+		for (int x = (int) pos.getX(); x < sizeX; x++) {
+			for (int y = (int) pos.getY(); y < sizeY; y++) {
+				for (int z = (int) pos.getZ(); z < sizeZ; z++) {
+					if (tiles[x][y][z] != -1) {
+						Shape.createCube(x, y, z, Tile.getTile(tiles[x][y][z]).getColor(), Tile.getTile(tiles[x][y][z]).getTexCoords(), 1);
+					}
+				}
+			}
+		}
+		glEnd();
+		glEndList();
 	}
 
-	public void dispose(){
-		glDeleteBuffers(vID);
-		glDeleteBuffers(cID);
+	@SuppressWarnings("unused")
+	private void checkTileInView() {
 	}
-	
-	public boolean isActive(){
+
+	public void dispose() {
+		shader.dispose();
+	}
+
+	public boolean isActive() {
 		return isActive;
 	}
-	
-	public void setActive(boolean isActive){
+
+	public void setActive(boolean isActive) {
 		this.isActive = isActive;
 	}
 }

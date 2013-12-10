@@ -71,5 +71,4 @@ public class Texture {
 	public void delete() {
 		glDeleteTextures(id);
 	}
-
 }
