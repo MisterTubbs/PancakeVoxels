@@ -1,32 +1,42 @@
 package com.nishu.voxel.world;
 
-import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL11.GL_BACK;
+import static org.lwjgl.opengl.GL11.GL_CULL_FACE;
+import static org.lwjgl.opengl.GL11.GL_DEPTH_TEST;
+import static org.lwjgl.opengl.GL11.GL_FRONT;
+import static org.lwjgl.opengl.GL11.GL_MODELVIEW;
+import static org.lwjgl.opengl.GL11.GL_MODULATE;
+import static org.lwjgl.opengl.GL11.GL_PROJECTION;
+import static org.lwjgl.opengl.GL11.GL_TEXTURE_ENV;
+import static org.lwjgl.opengl.GL11.GL_TEXTURE_ENV_MODE;
+import static org.lwjgl.opengl.GL11.glClearDepth;
+import static org.lwjgl.opengl.GL11.glCullFace;
+import static org.lwjgl.opengl.GL11.glEnable;
+import static org.lwjgl.opengl.GL11.glLoadIdentity;
+import static org.lwjgl.opengl.GL11.glMatrixMode;
+import static org.lwjgl.opengl.GL11.glOrtho;
+import static org.lwjgl.opengl.GL11.glTexEnvi;
+import static org.lwjgl.opengl.GL11.glViewport;
 import static org.lwjgl.util.glu.GLU.gluPerspective;
 
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
 
-import com.nishu.utils.Camera;
-import com.nishu.utils.Camera3D;
 import com.nishu.utils.Color4f;
 import com.nishu.utils.Font;
 import com.nishu.utils.GameLoop;
 import com.nishu.utils.Screen;
-import com.nishu.utils.Shader;
-import com.nishu.utils.ShaderProgram;
 import com.nishu.utils.Text;
 import com.nishu.voxel.Main;
-import com.nishu.voxel.utilites.Spritesheet;
-import com.nishu.voxel.world.chunks.Chunk;
+import com.nishu.voxel.world.tiles.Tile;
 
 public class World extends Screen {
 
-	private Camera camera;
-	private Font font;
+	public static final int AIRCHUNK = 0, MIXEDCHUNK = 1;
 
-	private Chunk c;
-	private ShaderProgram shader;
+	private Font font;
+	private WorldManager worldManager;
 
 	private boolean renderText = true;
 
@@ -37,14 +47,11 @@ public class World extends Screen {
 
 	@Override
 	public void init() {
-		camera = new Camera3D.CameraBuilder().setAspectRatio(Main.WIDTH / Main.HEIGHT).setRotation(0, 0, 0).setPosition(0, 0, 0).setFieldOfView(67).build();
+		Tile.createTileMap();
 		font = new Font();
 		font.loadFont("Default", "fonts/wasco.png");
-
-		Shader temp = new Shader("/shaders/chunk.vert", "/shaders/chunk.frag");
-		shader = new ShaderProgram(temp.getvShader(), temp.getfShader());
-
-		c = new Chunk(shader, 0, 0, 0);
+		
+		worldManager = new WorldManager();
 	}
 
 	@Override
@@ -55,26 +62,19 @@ public class World extends Screen {
 
 	@Override
 	public void update() {
-		c.update();
 		input();
+		worldManager.update();
 	}
 
 	private void input() {
-		camera.updateKeys(32, 2);
-		camera.updateMouse(1, 90, -90);
 		if (Mouse.isButtonDown(0)) {
 			Mouse.setGrabbed(true);
 		}
 		while (Keyboard.next()) {
 			if (Keyboard.getEventKeyState()) {
-				if (Keyboard.isKeyDown(Keyboard.KEY_ESCAPE)) {
-					dispose();
-				}
-				if (Keyboard.isKeyDown(Keyboard.KEY_F3) && !renderText) {
-					renderText = true;
-				} else if (Keyboard.isKeyDown(Keyboard.KEY_F3) && renderText) {
-					renderText = false;
-				}
+				if (Keyboard.isKeyDown(Keyboard.KEY_F3)) {
+					renderText = !renderText;
+				} 
 			}
 		}
 	}
@@ -82,11 +82,10 @@ public class World extends Screen {
 	@Override
 	public void render() {
 		render3D();
-		Spritesheet.tiles.bind();
-
-		camera.applyTranslations();
-		c.render();
+		
+		worldManager.render();
 		glLoadIdentity();
+		
 		if (renderText) {
 			render2D();
 			renderText();
@@ -94,8 +93,8 @@ public class World extends Screen {
 	}
 
 	private void renderText() {
-		Text.renderString(font, "X:" + (int) camera.getX() + " Y:" + (int) camera.getY() + " Z:" + (int) camera.getZ(), 0f, 0.95f, 0.5f, Color4f.WHITE);
-		Text.renderString(font, "Rotx:" + (int) camera.getPitch() + " RotY:" + (int) camera.getYaw() + " RotZ:" + (int) camera.getRoll(), 0f, 0.915f, 0.5f, Color4f.WHITE);
+		Text.renderString(font, "X:" + (int) worldManager.getMobManager().getPlayer().getX() + " Y:" + (int) worldManager.getMobManager().getPlayer().getY() + " Z:" + (int) worldManager.getMobManager().getPlayer().getZ(), 0f, 0.95f, 0.5f, Color4f.WHITE);
+		Text.renderString(font, "Rotx:" + (int) worldManager.getMobManager().getPlayer().getPitch() + " RotY:" + (int) worldManager.getMobManager().getPlayer().getYaw() + " RotZ:" + (int) worldManager.getMobManager().getPlayer().getRoll(), 0f, 0.915f, 0.5f, Color4f.WHITE);
 		Text.renderString(font, "FPS: " + GameLoop.getFPS(), 0f, 0.88f, 0.5f, Color4f.WHITE);
 	}
 
@@ -124,7 +123,6 @@ public class World extends Screen {
 
 	@Override
 	public void dispose() {
-		c.dispose();
 		Display.destroy();
 		System.exit(0);
 	}

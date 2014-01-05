@@ -17,6 +17,6 @@ public class TileGrass extends Tile {
 
 	@Override
 	public float[] getTexCoords() {
-		return new float[] { 0 + Spritesheet.tiles.uniformSize(), 0f };
+		return new float[] { 4 * Spritesheet.tiles.uniformSize(), 0f , Spritesheet.tiles.uniformSize(), 0f, 3 * Spritesheet.tiles.uniformSize(), 0f, 3 * Spritesheet.tiles.uniformSize(), 0.0625f, 3 * Spritesheet.tiles.uniformSize(), 0f, 3 * Spritesheet.tiles.uniformSize(), 0f};
 	}
 }

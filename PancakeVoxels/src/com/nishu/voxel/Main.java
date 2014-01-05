@@ -3,6 +3,7 @@ package com.nishu.voxel;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.util.glu.GLU.gluPerspective;
 
+import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.Display;
 
 import com.nishu.utils.GameLoop;
@@ -12,8 +13,8 @@ import com.nishu.voxel.world.World;
 
 public class Main extends Screen{
 	
-	public static final int WIDTH = 800;
-	public static final int HEIGHT = 600;
+	public static final int WIDTH = 1280;
+	public static final int HEIGHT = 720;
 	
 	private GameLoop gameLoop;
 	private World world;
@@ -21,7 +22,7 @@ public class Main extends Screen{
 	public Main(){
 		gameLoop = new GameLoop();
 		gameLoop.setScreen(this);
-		gameLoop.start(30);
+		gameLoop.start(60);
 	}
 
 	@Override
@@ -41,6 +42,9 @@ public class Main extends Screen{
 		glMatrixMode(GL_MODELVIEW);
 		
 		glEnable(GL_DEPTH_TEST);
+		glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
+		glEnable(GL_LINE_SMOOTH);
+		glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
 	}
 	
 	private void initCamera(){
@@ -48,6 +52,9 @@ public class Main extends Screen{
 
 	@Override
 	public void update() {
+		if (Keyboard.isKeyDown(Keyboard.KEY_ESCAPE)) {
+			dispose();
+		}
 		world.update();
 	}
 	
@@ -65,7 +72,7 @@ public class Main extends Screen{
 	}
 	
 	public static void main(String[] args){
-		Window.createWindow(WIDTH, HEIGHT, "Voxels", false);
+		Window.createWindow(WIDTH, HEIGHT, "Voxels", true);
 		new Main();
 	}
 }
