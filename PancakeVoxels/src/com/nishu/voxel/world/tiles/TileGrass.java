@@ -5,6 +5,16 @@ import com.nishu.voxel.utilites.Spritesheet;
 
 public class TileGrass extends Tile {
 
+	/* 
+	 * Texture coords for multi-textured tiles
+	 * bottom - first
+	 * top - second
+	 * front - third
+	 * back - fourth
+	 * left - fifth
+	 * right - sixth
+	 */
+	
 	@Override
 	public byte getId() {
 		return 1;
@@ -17,6 +27,11 @@ public class TileGrass extends Tile {
 
 	@Override
 	public float[] getTexCoords() {
-		return new float[] { 4 * Spritesheet.tiles.uniformSize(), 0f , Spritesheet.tiles.uniformSize(), 0f, 3 * Spritesheet.tiles.uniformSize(), 0f, 3 * Spritesheet.tiles.uniformSize(), 0.0625f, 3 * Spritesheet.tiles.uniformSize(), 0f, 3 * Spritesheet.tiles.uniformSize(), 0f};
+		return new float[] { 4 * Spritesheet.tiles.uniformSize(), Spritesheet.tiles.uniformSize(), 
+				Spritesheet.tiles.uniformSize(), Spritesheet.tiles.uniformSize(),
+				3 * Spritesheet.tiles.uniformSize(), Spritesheet.tiles.uniformSize(),
+				3 * Spritesheet.tiles.uniformSize(), 0,
+				3 * Spritesheet.tiles.uniformSize(), Spritesheet.tiles.uniformSize(),
+				3 * Spritesheet.tiles.uniformSize(), Spritesheet.tiles.uniformSize() };
 	}
 }

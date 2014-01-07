@@ -9,10 +9,9 @@ public class Player extends Mob {
 	}
 
 	public void update() {
-		//changed
 		move();
 	}
-
+	
 	public void render() {
 	}
 

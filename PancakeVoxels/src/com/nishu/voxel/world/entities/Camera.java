@@ -86,7 +86,7 @@ public class Camera extends Entity {
 			setY(getY() + speed * delay * (float) Time.getDelta());
 		}
 		if (shift && !space) {
-			setY(getY() - speed * delay *(float) Time.getDelta());
+			setY(getY() - speed * delay * (float) Time.getDelta());
 		}
 	}
 
