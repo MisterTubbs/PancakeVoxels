@@ -9,12 +9,10 @@ import org.lwjgl.opengl.Display;
 import com.nishu.utils.GameLoop;
 import com.nishu.utils.Screen;
 import com.nishu.utils.Window;
+import com.nishu.voxel.utilites.Constants;
 import com.nishu.voxel.world.World;
 
 public class Main extends Screen{
-	
-	public static final int WIDTH = 1280;
-	public static final int HEIGHT = 720;
 	
 	private GameLoop gameLoop;
 	private World world;
@@ -22,7 +20,7 @@ public class Main extends Screen{
 	public Main(){
 		gameLoop = new GameLoop();
 		gameLoop.setScreen(this);
-		gameLoop.start(60);
+		gameLoop.start(30);
 	}
 
 	@Override
@@ -38,7 +36,7 @@ public class Main extends Screen{
 		glMatrixMode(GL_PROJECTION);
 		glLoadIdentity();
 		
-		gluPerspective(67.0f, WIDTH / HEIGHT, 0.001f, 1000f);
+		gluPerspective(67.0f, Constants.WIDTH / Constants.HEIGHT, 0.001f, 1000f);
 		glMatrixMode(GL_MODELVIEW);
 		
 		glEnable(GL_DEPTH_TEST);
@@ -72,7 +70,7 @@ public class Main extends Screen{
 	}
 	
 	public static void main(String[] args){
-		Window.createWindow(WIDTH, HEIGHT, "Voxels", true);
+		Window.createWindow(Constants.WIDTH, Constants.HEIGHT, "Voxels", true);
 		new Main();
 	}
 }

@@ -28,7 +28,7 @@ import com.nishu.utils.Font;
 import com.nishu.utils.GameLoop;
 import com.nishu.utils.Screen;
 import com.nishu.utils.Text;
-import com.nishu.voxel.Main;
+import com.nishu.voxel.utilites.Constants;
 import com.nishu.voxel.world.tiles.Tile;
 
 public class World extends Screen {
@@ -93,9 +93,10 @@ public class World extends Screen {
 	}
 
 	private void renderText() {
-		Text.renderString(font, "X:" + (int) worldManager.getMobManager().getPlayer().getX() + " Y:" + (int) worldManager.getMobManager().getPlayer().getY() + " Z:" + (int) worldManager.getMobManager().getPlayer().getZ(), 0f, 0.95f, 0.5f, Color4f.WHITE);
-		Text.renderString(font, "Rotx:" + (int) worldManager.getMobManager().getPlayer().getPitch() + " RotY:" + (int) worldManager.getMobManager().getPlayer().getYaw() + " RotZ:" + (int) worldManager.getMobManager().getPlayer().getRoll(), 0f, 0.915f, 0.5f, Color4f.WHITE);
-		Text.renderString(font, "FPS: " + GameLoop.getFPS(), 0f, 0.88f, 0.5f, Color4f.WHITE);
+		Text.renderString(font, "FPS: " + GameLoop.getFPS(), 0f, 1.35f, Constants.textSize, Color4f.WHITE);
+		Text.renderString(font, "X:" + (int) worldManager.getMobManager().getPlayer().getX() + " Y:" + (int) worldManager.getMobManager().getPlayer().getY() + " Z:" + (int) worldManager.getMobManager().getPlayer().getZ(), 0f, 1.3f, Constants.textSize, Color4f.WHITE);
+		Text.renderString(font, "Rotx:" + (int) worldManager.getMobManager().getPlayer().getPitch() + " RotY:" + (int) worldManager.getMobManager().getPlayer().getYaw() + " RotZ:" + (int) worldManager.getMobManager().getPlayer().getRoll(), 0f, 1.25f, Constants.textSize, Color4f.WHITE);
+		Text.renderString(font, "Chunks: " + Constants.chunksLoaded + " (" + Constants.chunksFrustum + ")", 0f, 1.2f, Constants.textSize, Color4f.WHITE);
 	}
 
 	public void render2D() {
@@ -105,7 +106,7 @@ public class World extends Screen {
 		glLoadIdentity();
 
 		glOrtho(0, 1, 0, 1, -1, 1);
-		glViewport(0, 0, Main.WIDTH, Main.HEIGHT);
+		glViewport(0, 0, Constants.WIDTH, Constants.HEIGHT);
 		glMatrixMode(GL_MODELVIEW);
 	}
 
@@ -115,7 +116,7 @@ public class World extends Screen {
 		glMatrixMode(GL_PROJECTION);
 		glLoadIdentity();
 
-		gluPerspective(67.0f, Main.WIDTH / Main.HEIGHT, 0.001f, 1000f);
+		gluPerspective(67.0f, Constants.WIDTH / Constants.HEIGHT, 0.001f, 1000f);
 		glMatrixMode(GL_MODELVIEW);
 
 		glEnable(GL_DEPTH_TEST);

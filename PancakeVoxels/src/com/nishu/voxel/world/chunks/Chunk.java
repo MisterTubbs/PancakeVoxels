@@ -1,18 +1,25 @@
 package com.nishu.voxel.world.chunks;
 
-import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL11.GL_COMPILE;
+import static org.lwjgl.opengl.GL11.GL_QUADS;
+import static org.lwjgl.opengl.GL11.glBegin;
+import static org.lwjgl.opengl.GL11.glCallList;
+import static org.lwjgl.opengl.GL11.glDeleteLists;
+import static org.lwjgl.opengl.GL11.glEnd;
+import static org.lwjgl.opengl.GL11.glEndList;
+import static org.lwjgl.opengl.GL11.glGenLists;
+import static org.lwjgl.opengl.GL11.glNewList;
 
 import java.util.Random;
 
 import com.nishu.utils.ShaderProgram;
 import com.nishu.utils.Vector3f;
 import com.nishu.voxel.geometry.Shape;
+import com.nishu.voxel.utilites.Constants;
 import com.nishu.voxel.world.World;
 import com.nishu.voxel.world.tiles.Tile;
 
 public class Chunk {
-
-	public static final int CHUNKSIZE = 16;
 
 	private Vector3f pos;
 	private byte[][][] tiles;
@@ -39,9 +46,9 @@ public class Chunk {
 	public void initGL() {
 		rand = new Random();
 
-		sizeX = (int) pos.getX() + CHUNKSIZE;
-		sizeY = (int) pos.getY() + CHUNKSIZE;
-		sizeZ = (int) pos.getZ() + CHUNKSIZE;
+		sizeX = (int) pos.getX() + Constants.CHUNKSIZE;
+		sizeY = (int) pos.getY() + Constants.CHUNKSIZE;
+		sizeZ = (int) pos.getZ() + Constants.CHUNKSIZE;
 
 		vcID = glGenLists(1);
 
@@ -159,5 +166,17 @@ public class Chunk {
 
 	public void setActive(boolean isActive) {
 		this.isActive = isActive;
+	}
+	
+	public Vector3f getCenter() {
+		return new Vector3f(pos.x - (Constants.CHUNKSIZE / 2), pos.y - (Constants.CHUNKSIZE / 2), pos.z - (Constants.CHUNKSIZE / 2));
+	}
+	
+	public Vector3f getPos() {
+		return pos;
+	}
+	
+	public int getType() {
+		return type;
 	}
 }

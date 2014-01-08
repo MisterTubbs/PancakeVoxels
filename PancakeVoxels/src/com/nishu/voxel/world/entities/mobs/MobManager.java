@@ -8,7 +8,6 @@ import java.util.ArrayList;
 
 import com.nishu.voxel.utilites.Constants;
 import com.nishu.voxel.utilites.GameObject;
-import com.nishu.voxel.world.chunks.Chunk;
 import com.nishu.voxel.world.entities.Camera;
 
 public class MobManager implements GameObject{
@@ -25,7 +24,7 @@ public class MobManager implements GameObject{
 
 	private void init() {
 		mobs = new ArrayList<Mob>();
-		player = new Player(new Camera(0, (Constants.viewDistance * Chunk.CHUNKSIZE) + 2, 0, 5, 131, 0, 1, 90, -90, 1), 0);
+		player = new Player(new Camera(0, (Constants.viewDistance * Constants.CHUNKSIZE) + 2, 0, 5, 131, 0, 1, 90, -90, 1), 0);
 	}
 	
 	private void initGL() {
